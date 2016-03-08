@@ -1,4 +1,4 @@
-package com.carlosgracite.redroid.example;
+package com.carlosgracite.redroid;
 
 public class Action<T> {
 
