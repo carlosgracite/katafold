@@ -28,7 +28,7 @@ public abstract class Store<State> {
 
         if (!currentState.equals(previousState)) {
             for (ChangeListener<State> changeListener: changeListeners) {
-                changeListener.onStateChange(previousState, currentState);
+                changeListener.onStateChange(currentState);
             }
         }
 
@@ -49,7 +49,11 @@ public abstract class Store<State> {
         return isDispatching;
     }
 
+    public State getState() {
+        return currentState;
+    }
+
     public interface ChangeListener<State> {
-        void onStateChange(State previousState, State currentState);
+        void onStateChange(State currentState);
     }
 }
