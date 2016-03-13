@@ -116,6 +116,21 @@ public class ActionSelectorTest {
     }
 
     @Test
+    public void failsIfClassNotPublic() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "class TestReducer implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST\")",
+                "  Integer testAction(String state, String action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new RedroidProcessor())
+                .failsToCompile()
+                .withErrorContaining("class TestReducer contains methods annotated with @ActionSelector and should be public.");
+    }
+
+    @Test
     public void failsIfClassFinal() {
         JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
                 generateImportBoilerplate(),

@@ -31,6 +31,13 @@ public class ReducerClass {
                             reducerClassElement.getSimpleName().toString(), ActionSelector.class.getSimpleName()));
         }
 
+        // verifies if enclosing class is not public
+        if (!reducerClassElement.getModifiers().contains(Modifier.PUBLIC)) {
+            throw new IllegalArgumentException(
+                    String.format("class %s contains methods annotated with @%s and should be public.",
+                            reducerClassElement.getSimpleName().toString(), ActionSelector.class.getSimpleName()));
+        }
+
         // extracts Reducer interface
         DeclaredType reducerInterface = getReducerInterface(
                 reducerClassElement.getInterfaces(), INTERFACE_REDUCER);
