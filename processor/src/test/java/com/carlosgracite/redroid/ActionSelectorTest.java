@@ -7,12 +7,53 @@ import com.google.testing.compile.JavaFileObjects;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import javax.tools.JavaFileObject;
 
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
+import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 
 
 public class ActionSelectorTest {
+
+    @Test
+    public void multipleReducersCompileWithSuccess() {
+        JavaFileObject source1 = JavaFileObjects.forSourceString("test.TestReducer1", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer1 implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST_A\")",
+                "  String testActionA(String state, String action) {return null;}",
+                "}"));
+
+        JavaFileObject source2 = JavaFileObjects.forSourceString("test.TestReducer2", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer2 implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST_B\")",
+                "  String testActionB(String state, String action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSources()).that(Arrays.asList(source1, source2))
+                .processedWith(new RedroidProcessor())
+                .compilesWithoutError();
+    }
+
+
+    @Test
+    public void failsIfWrongElementAnnotatedWithActionSelector() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "@ActionSelector(\"ACTION_TEST\")",
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  String testAction(String state, String action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new RedroidProcessor())
+                .failsToCompile()
+                .withErrorContaining("Only methods can be annotated with @ActionSelector.");
+    }
 
     @Test
     public void failsIfNotImplementsReducerInterface() {
@@ -41,7 +82,7 @@ public class ActionSelectorTest {
         Truth.assertAbout(javaSource()).that(source)
                 .processedWith(new RedroidProcessor())
                 .failsToCompile()
-                .withErrorContaining("enclosing class of method testAction annotated with @ActionSelector should not be final");
+                .withErrorContaining("class TestReducer contains methods annotated with @ActionSelector and should not be final.");
     }
 
     @Test

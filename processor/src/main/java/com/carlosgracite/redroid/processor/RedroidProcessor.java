@@ -41,11 +41,13 @@ public class RedroidProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
 
+        ReducerClassHolder reducerClassHolder = new ReducerClassHolder();
+
         for (Element annotatedElement: roundEnvironment.getElementsAnnotatedWith(ActionSelector.class)) {
 
             // only menthods can be annotated with @ActionSelector
             if (annotatedElement.getKind() != ElementKind.METHOD) {
-                error(annotatedElement, "Only methods can be annotated with @%s",
+                error(annotatedElement, "Only methods can be annotated with @%s.",
                         ActionSelector.class.getSimpleName());
                 return true;
             }
@@ -53,7 +55,7 @@ public class RedroidProcessor extends AbstractProcessor {
             ExecutableElement executableElement = (ExecutableElement) annotatedElement;
 
             try {
-                ActionSelectorAnnotatedMethod annotatedMethod = new ActionSelectorAnnotatedMethod(executableElement);
+                reducerClassHolder.processMethod(executableElement);
 
             } catch (IllegalArgumentException e) {
                 error(executableElement, e.getMessage());
