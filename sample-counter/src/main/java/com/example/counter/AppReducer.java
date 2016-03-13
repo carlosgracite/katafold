@@ -2,11 +2,16 @@ package com.example.counter;
 
 import com.carlosgracite.redroid.Action;
 import com.carlosgracite.redroid.Reducer;
+import com.carlosgracite.redroid.annotations.ActionSelector;
 
 public class AppReducer implements Reducer<AppState> {
 
-    @Override
-    public AppState reduce(AppState state, Action action) {
+    @ActionSelector("ACTION_INCREMENT")
+    public AppState increment(AppState appState, Action<Void>action) {
+        return null;
+    }
+
+    @Override public AppState reduce(AppState state, Action action) {
 
         switch (action.getType()) {
 

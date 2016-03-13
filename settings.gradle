@@ -1,1 +1,1 @@
-include ':app', ':redroid', ':sample-counter'
+include ':app', ':redroid', ':sample-counter', ':processor', ':redroid-annotations'
