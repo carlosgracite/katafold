@@ -3,6 +3,7 @@ package com.carlosgracite.redroid.processor;
 import com.carlosgracite.redroid.annotations.ActionSelector;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
@@ -21,6 +22,12 @@ public class ActionSelectorAnnotatedMethod {
 
         ActionSelector annotation = methodElement.getAnnotation(ActionSelector.class);
         annotationValue = annotation.value();
+
+        // checks if method is private
+        if (methodElement.getModifiers().contains(Modifier.PRIVATE)) {
+            throw new IllegalArgumentException(String.format("%s() method should not be private.",
+                    methodElement.getSimpleName().toString()));
+        }
 
         //  return type of annotated method should be the one defined by the generic type
         if (!methodElement.getReturnType().equals(reducerStateType)) {

@@ -70,6 +70,20 @@ public class ActionSelectorTest {
                 .compilesWithoutError();
     }
 
+    @Test
+    public void failIfActionMethodIsPrivate() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST1\")",
+                "  private String testActionA(String state, String Action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new RedroidProcessor())
+                .failsToCompile()
+                .withErrorContaining("testActionA() method should not be private.");
+    }
 
     @Test
     public void failsIfWrongElementAnnotatedWithActionSelector() {
