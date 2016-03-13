@@ -29,6 +29,8 @@ public class RedroidProcessor extends AbstractProcessor {
     private Filer filer;
     private Messager messager;
 
+    private ReducerClassHolder reducerClassHolder = new ReducerClassHolder();
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -41,11 +43,9 @@ public class RedroidProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
 
-        ReducerClassHolder reducerClassHolder = new ReducerClassHolder();
-
         for (Element annotatedElement: roundEnvironment.getElementsAnnotatedWith(ActionSelector.class)) {
 
-            // only menthods can be annotated with @ActionSelector
+            // only methods can be annotated with @ActionSelector
             if (annotatedElement.getKind() != ElementKind.METHOD) {
                 error(annotatedElement, "Only methods can be annotated with @%s.",
                         ActionSelector.class.getSimpleName());

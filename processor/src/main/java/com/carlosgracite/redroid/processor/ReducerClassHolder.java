@@ -21,6 +21,7 @@ public class ReducerClassHolder {
 
         if (reducerClass == null) {
             reducerClass = new ReducerClass(enclosingClassElement);
+            reducerClassMap.put(enclosingClassElement, reducerClass);
         }
 
         reducerClass.addMethod(methodElement);

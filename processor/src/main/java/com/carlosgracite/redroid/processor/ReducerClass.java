@@ -50,7 +50,23 @@ public class ReducerClass {
         ActionSelectorAnnotatedMethod method =
                 new ActionSelectorAnnotatedMethod(methodElement, reducerStateType);
 
+        ActionSelectorAnnotatedMethod existing = getMethodWithActionId(method.getAnnotationValue());
+        if (existing != null) {
+            throw new IllegalArgumentException(String.format(
+                    "The action selector with id '%s' used on method %s() is already defined on method %s().",
+                    method.getAnnotationValue(), method.getMethodName(), existing.getMethodName()));
+        }
+
         methods.add(method);
+    }
+
+    public ActionSelectorAnnotatedMethod getMethodWithActionId(String actionId) {
+        for (ActionSelectorAnnotatedMethod method: methods) {
+            if (method.getAnnotationValue().equals(actionId)) {
+                return method;
+            }
+        }
+        return null;
     }
 
     private DeclaredType getReducerInterface(List<? extends TypeMirror> interfaces, String name) {

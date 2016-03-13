@@ -9,13 +9,15 @@ import javax.lang.model.type.DeclaredType;
 public class ActionSelectorAnnotatedMethod {
 
     private ExecutableElement annotatedMethodElement;
+    private VariableElement param1;
+    private VariableElement param2;
 
-    private String qualifiedSuperClassName;
-    private String simpleTypeName;
     private String annotationValue;
+    private String methodName;
 
     public ActionSelectorAnnotatedMethod(ExecutableElement methodElement, DeclaredType reducerStateType) throws IllegalArgumentException {
         this.annotatedMethodElement = methodElement;
+        this.methodName = methodElement.getSimpleName().toString();
 
         ActionSelector annotation = methodElement.getAnnotation(ActionSelector.class);
         annotationValue = annotation.value();
@@ -31,14 +33,23 @@ public class ActionSelectorAnnotatedMethod {
                     methodElement.getSimpleName().toString()));
         }
 
-        VariableElement param1 = methodElement.getParameters().get(0);
+        param1 = methodElement.getParameters().get(0);
 
         if (!param1.asType().equals(reducerStateType)) {
             throw new IllegalArgumentException(String.format("first argument of method %s() should be %s.",
                     methodElement.getSimpleName().toString(), reducerStateType.asElement().getSimpleName().toString()));
         }
 
+        param2 = methodElement.getParameters().get(1);
+
         //throw new IllegalArgumentException("lala");
     }
 
+    public String getAnnotationValue() {
+        return annotationValue;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
 }

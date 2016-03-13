@@ -8,7 +8,6 @@ import com.google.testing.compile.JavaFileObjects;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import javax.tools.JavaFileObject;
 
@@ -17,6 +16,38 @@ import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 
 
 public class ActionSelectorTest {
+
+    @Test
+    public void shouldCompileWithMultipleInterfaces() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "interface IStub {}",
+                "public abstract class TestReducer implements IStub, Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST1\")",
+                "  String testActionA(String state, String Action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new RedroidProcessor())
+                .compilesWithoutError();
+    }
+
+    @Test
+    public void shouldCompileWithMultipleActions() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST1\")",
+                "  String testActionA(String state, String Action) {return null;}",
+                "",
+                "  @ActionSelector(\"ACTION_TEST2\")",
+                "  String testActionB(String state, String Action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new RedroidProcessor())
+                .compilesWithoutError();
+    }
 
     @Test
     public void multipleReducersCompileWithSuccess() {
@@ -128,6 +159,24 @@ public class ActionSelectorTest {
                 .processedWith(new RedroidProcessor())
                 .failsToCompile()
                 .withErrorContaining("first argument of method testAction() should be String.");
+    }
+
+    @Test
+    public void failsIfActionIdAlreadyDefined() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST\")",
+                "  String testActionA(String state, String Action) {return null;}",
+                "",
+                "  @ActionSelector(\"ACTION_TEST\")",
+                "  String testActionB(String state, String Action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new RedroidProcessor())
+                .failsToCompile()
+                .withErrorContaining("The action selector with id 'ACTION_TEST' used on method testActionB() is already defined on method testActionA().");
     }
 
     private String generateImportBoilerplate() {
