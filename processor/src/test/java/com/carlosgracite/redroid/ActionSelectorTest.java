@@ -18,6 +18,48 @@ import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 public class ActionSelectorTest {
 
     @Test
+    public void shouldGenerateMultipleConstructors() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  TestReducer(String arg0) {}",
+                "  TestReducer(String arg0, Integer arg1) {}",
+                "  @ActionSelector(\"ACTION_TEST\")",
+                "  String testAction(String state, Integer action) {return null;}",
+                "}"));
+
+        JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestReducerRedroid",
+                Joiner.on('\n').join(
+                        "package test;",
+                        "import com.carlosgracite.redroid.Action;",
+                        "import java.lang.Integer;",
+                        "import java.lang.Override;",
+                        "import java.lang.String;",
+                        "public class TestReducerRedroid extends TestReducer {",
+                        "  TestReducerRedroid(String arg0) {",
+                        "    super(arg0);",
+                        "  }",
+                        "  TestReducerRedroid(String arg0, Integer arg1) {",
+                        "    super(arg0, arg1);",
+                        "  }",
+                        "  @Override",
+                        "  public String reduce(String state, Action action) {",
+                        "    switch (action.getType()) {",
+                        "      case \"ACTION_TEST\":",
+                        "        return testAction(state, (Integer)action.getPayload());",
+                        "    }",
+                        "    return state;",
+                        "  }",
+                        "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new RedroidProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(expectedSource);
+    }
+
+    @Test
     public void shouldCompileWithMultipleInterfaces() {
         JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
                 generateImportBoilerplate(),
@@ -38,19 +80,44 @@ public class ActionSelectorTest {
                 generateImportBoilerplate(),
                 "public abstract class TestReducer implements Reducer<String> {",
                 "  @ActionSelector(\"ACTION_TEST1\")",
-                "  String testActionA(String state, String Action) {return null;}",
+                "  String testActionA(String state, Integer Action) {return null;}",
                 "",
                 "  @ActionSelector(\"ACTION_TEST2\")",
                 "  String testActionB(String state, String Action) {return null;}",
                 "}"));
 
+        JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestReducerRedroid",
+                Joiner.on('\n').join(
+                        "package test;",
+                        "import com.carlosgracite.redroid.Action;",
+                        "import java.lang.Integer;",
+                        "import java.lang.Override;",
+                        "import java.lang.String;",
+                        "public class TestReducerRedroid extends TestReducer {",
+                        "  TestReducerRedroid() {",
+                        "    super();",
+                        "  }",
+                        "  @Override",
+                        "  public String reduce(String state, Action action) {",
+                        "    switch (action.getType()) {",
+                        "      case \"ACTION_TEST1\":",
+                        "        return testActionA(state, (Integer)action.getPayload());",
+                        "      case \"ACTION_TEST2\":",
+                        "        return testActionB(state, (String)action.getPayload());",
+                        "    }",
+                        "    return state;",
+                        "  }",
+                        "}"));
+
         Truth.assertAbout(javaSource()).that(source)
                 .processedWith(new RedroidProcessor())
-                .compilesWithoutError();
+                .compilesWithoutError()
+                .and()
+                .generatesSources(expectedSource);
     }
 
     @Test
-    public void multipleReducersCompileWithSuccess() {
+    public void shouldCompileWithMultipleReducers() {
         JavaFileObject source1 = JavaFileObjects.forSourceString("test.TestReducer1", Joiner.on('\n').join(
                 generateImportBoilerplate(),
                 "public abstract class TestReducer1 implements Reducer<String> {",
@@ -65,9 +132,51 @@ public class ActionSelectorTest {
                 "  String testActionB(String state, String action) {return null;}",
                 "}"));
 
+        JavaFileObject expectedSource1 = JavaFileObjects.forSourceString("test/TestReducer1Redroid",
+                Joiner.on('\n').join(
+                        "package test;",
+                        "import com.carlosgracite.redroid.Action;",
+                        "import java.lang.Override;",
+                        "import java.lang.String;",
+                        "public class TestReducer1Redroid extends TestReducer1 {",
+                        "  TestReducer1Redroid() {",
+                        "    super();",
+                        "  }",
+                        "  @Override",
+                        "  public String reduce(String state, Action action) {",
+                        "    switch (action.getType()) {",
+                        "      case \"ACTION_TEST_A\":",
+                        "        return testActionA(state, (String)action.getPayload());",
+                        "    }",
+                        "    return state;",
+                        "  }",
+                        "}"));
+
+        JavaFileObject expectedSource2 = JavaFileObjects.forSourceString("test/TestReducer2Redroid",
+                Joiner.on('\n').join(
+                        "package test;",
+                        "import com.carlosgracite.redroid.Action;",
+                        "import java.lang.Override;",
+                        "import java.lang.String;",
+                        "public class TestReducer2Redroid extends TestReducer2 {",
+                        "  TestReducer2Redroid() {",
+                        "    super();",
+                        "  }",
+                        "  @Override",
+                        "  public String reduce(String state, Action action) {",
+                        "    switch (action.getType()) {",
+                        "      case \"ACTION_TEST_B\":",
+                        "        return testActionB(state, (String)action.getPayload());",
+                        "    }",
+                        "    return state;",
+                        "  }",
+                        "}"));
+
         Truth.assertAbout(javaSources()).that(Arrays.asList(source1, source2))
                 .processedWith(new RedroidProcessor())
-                .compilesWithoutError();
+                .compilesWithoutError()
+                .and()
+                .generatesSources(expectedSource1, expectedSource2);
     }
 
     @Test

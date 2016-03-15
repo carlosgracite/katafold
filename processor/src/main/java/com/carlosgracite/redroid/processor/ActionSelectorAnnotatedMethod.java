@@ -49,7 +49,6 @@ public class ActionSelectorAnnotatedMethod {
 
         param2 = methodElement.getParameters().get(1);
 
-        //throw new IllegalArgumentException("lala");
     }
 
     public String getAnnotationValue() {
@@ -58,5 +57,13 @@ public class ActionSelectorAnnotatedMethod {
 
     public String getMethodName() {
         return methodName;
+    }
+
+    public VariableElement getParam1() {
+        return param1;
+    }
+
+    public VariableElement getParam2() {
+        return param2;
     }
 }

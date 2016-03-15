@@ -3,6 +3,7 @@ package com.carlosgracite.redroid.processor;
 import com.carlosgracite.redroid.annotations.ActionSelector;
 import com.google.auto.service.AutoService;
 
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -56,15 +57,21 @@ public class RedroidProcessor extends AbstractProcessor {
 
             try {
                 reducerClassHolder.processMethod(executableElement);
-
             } catch (IllegalArgumentException e) {
                 error(executableElement, e.getMessage());
                 return true;
             }
-
         }
 
-        return false;
+        try {
+            reducerClassHolder.generateCode(elementUtils, filer);
+            reducerClassHolder.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return true;
+        }
+
+        return true;
     }
 
     @Override
