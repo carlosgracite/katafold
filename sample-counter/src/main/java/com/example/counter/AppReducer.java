@@ -1,8 +1,8 @@
 package com.example.counter;
 
-import com.carlosgracite.redroid.Action;
-import com.carlosgracite.redroid.Reducer;
-import com.carlosgracite.redroid.annotations.ActionSelector;
+import com.carlosgracite.katafold.Action;
+import com.carlosgracite.katafold.Reducer;
+import com.carlosgracite.katafold.annotations.ActionSelector;
 
 public class AppReducer implements Reducer<AppState> {
 

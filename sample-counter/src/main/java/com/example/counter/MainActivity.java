@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.carlosgracite.redroid.Store;
+import com.carlosgracite.katafold.Store;
 
 public class MainActivity extends AppCompatActivity implements Store.ChangeListener<AppState> {
 

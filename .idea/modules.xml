@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Redroid.iml" filepath="$PROJECT_DIR$/Redroid.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Katafold.iml" filepath="$PROJECT_DIR$/Katafold.iml" />
+      <module fileurl="file://$PROJECT_DIR$/katafold/katafold.iml" filepath="$PROJECT_DIR$/katafold/katafold.iml" />
+      <module fileurl="file://$PROJECT_DIR$/katafold-annotations/katafold-annotations.iml" filepath="$PROJECT_DIR$/katafold-annotations/katafold-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/processor/processor.iml" filepath="$PROJECT_DIR$/processor/processor.iml" />
-      <module fileurl="file://$PROJECT_DIR$/redroid/redroid2.iml" filepath="$PROJECT_DIR$/redroid/redroid2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/redroid-annotations/redroid-annotations.iml" filepath="$PROJECT_DIR$/redroid-annotations/redroid-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-counter/sample-counter.iml" filepath="$PROJECT_DIR$/sample-counter/sample-counter.iml" />
     </modules>
   </component>

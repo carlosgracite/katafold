@@ -1,1 +1,1 @@
-include ':app', ':redroid', ':sample-counter', ':processor', ':redroid-annotations'
+include ':katafold', ':sample-counter', ':processor', ':katafold-annotations'
