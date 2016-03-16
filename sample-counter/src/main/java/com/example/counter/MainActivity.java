@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements Store.ChangeListe
             }
         });
 
-        appStore = new AppStore(new AppReducer());
+        appStore = new AppStore(new KataAppReducer());
 
         // setups view with initial state
         onStateChange(appStore.getState());

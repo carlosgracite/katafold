@@ -1,1 +1,1 @@
-include ':katafold', ':sample-counter', ':processor', ':katafold-annotations'
+include ':katafold', ':katafold-annotations', ':processor', ':sample-counter'

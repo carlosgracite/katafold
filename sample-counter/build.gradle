@@ -36,4 +36,5 @@ dependencies {
     apt "org.immutables:value:2.1.12"
     provided "org.immutables:value:2.1.12:annotations"
     provided "org.immutables:builder:2.1.12"
+
 }

@@ -1,34 +1,24 @@
 package com.example.counter;
 
-import com.carlosgracite.katafold.Action;
 import com.carlosgracite.katafold.Reducer;
 import com.carlosgracite.katafold.annotations.ActionSelector;
 
-public class AppReducer implements Reducer<AppState> {
+public abstract class AppReducer implements Reducer<AppState> {
 
     @ActionSelector("ACTION_INCREMENT")
-    public AppState increment(AppState appState, Action<Void>action) {
-        return null;
+    public AppState increment(AppState state, Void payload) {
+        return ImmutableAppState.builder()
+                .from(state)
+                .count(state.getCount() + 1)
+                .build();
     }
 
-    @Override public AppState reduce(AppState state, Action action) {
-
-        switch (action.getType()) {
-
-            case "ACTION_INCREMENT":
-                return ImmutableAppState.builder()
-                        .from(state)
-                        .count(state.getCount() + 1)
-                        .build();
-
-            case "ACTION_DECREMENT":
-                return ImmutableAppState.builder()
-                        .from(state)
-                        .count(state.getCount() - 1)
-                        .build();
-        }
-
-        return state;
+    @ActionSelector("ACTION_DECREMENT")
+    public AppState decrement(AppState state, Void payload) {
+        return ImmutableAppState.builder()
+                .from(state)
+                .count(state.getCount() - 1)
+                .build();
     }
 
 }
