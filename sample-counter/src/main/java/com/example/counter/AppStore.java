@@ -1,7 +1,7 @@
 package com.example.counter;
 
-import com.carlosgracite.redroid.Reducer;
-import com.carlosgracite.redroid.Store;
+import com.carlosgracite.katafold.Reducer;
+import com.carlosgracite.katafold.Store;
 
 public class AppStore extends Store<AppState> {
 

@@ -20,12 +20,18 @@ android {
     }
 }
 
+android.applicationVariants.all { variant ->
+    variant.javaCompile.dependsOn ':processor:jar'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.2.0'
 
-    compile project(':redroid')
+    provided project(':katafold-annotations')
+    apt project(':processor')
+    compile project(':katafold')
 
     apt "org.immutables:value:2.1.12"
     provided "org.immutables:value:2.1.12:annotations"

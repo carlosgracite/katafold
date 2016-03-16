@@ -1,6 +1,6 @@
 package com.example.counter;
 
-import com.carlosgracite.redroid.Action;
+import com.carlosgracite.katafold.Action;
 
 public class CountAction extends Action<Void> {
 
