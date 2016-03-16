@@ -35,7 +35,7 @@ public class ActionSelectorAnnotatedMethod {
                     methodElement.getSimpleName().toString(), reducerStateType.asElement().getSimpleName().toString()));
         }
 
-        if (methodElement.getParameters().size() != 2) {
+        if (methodElement.getParameters().size() == 0 || methodElement.getParameters().size() > 2) {
             throw new IllegalArgumentException(String.format("wrong number of parameters on method %s().",
                     methodElement.getSimpleName().toString()));
         }
@@ -47,7 +47,9 @@ public class ActionSelectorAnnotatedMethod {
                     methodElement.getSimpleName().toString(), reducerStateType.asElement().getSimpleName().toString()));
         }
 
-        param2 = methodElement.getParameters().get(1);
+        if (methodElement.getParameters().size() == 2) {
+            param2 = methodElement.getParameters().get(1);
+        }
 
     }
 
@@ -57,10 +59,6 @@ public class ActionSelectorAnnotatedMethod {
 
     public String getMethodName() {
         return methodName;
-    }
-
-    public VariableElement getParam1() {
-        return param1;
     }
 
     public VariableElement getParam2() {

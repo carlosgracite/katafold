@@ -6,7 +6,7 @@ import com.carlosgracite.katafold.annotations.ActionSelector;
 public abstract class AppReducer implements Reducer<AppState> {
 
     @ActionSelector("ACTION_INCREMENT")
-    public AppState increment(AppState state, Void payload) {
+    public AppState increment(AppState state) {
         return ImmutableAppState.builder()
                 .from(state)
                 .count(state.getCount() + 1)
@@ -14,7 +14,7 @@ public abstract class AppReducer implements Reducer<AppState> {
     }
 
     @ActionSelector("ACTION_DECREMENT")
-    public AppState decrement(AppState state, Void payload) {
+    public AppState decrement(AppState state) {
         return ImmutableAppState.builder()
                 .from(state)
                 .count(state.getCount() - 1)

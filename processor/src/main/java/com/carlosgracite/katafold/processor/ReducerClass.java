@@ -52,6 +52,15 @@ public class ReducerClass {
                             reducerClassElement.getSimpleName().toString(), ActionSelector.class.getSimpleName()));
         }
 
+        // verifies if constructor is private
+        for (ExecutableElement executableElement: getConstructors()) {
+            if (executableElement.getModifiers().contains(Modifier.PRIVATE)) {
+                throw new IllegalArgumentException(
+                        String.format("class %s contains methods annotated with @%s and should not contain private constructors.",
+                                reducerClassElement.getSimpleName().toString(), ActionSelector.class.getSimpleName()));
+            }
+        }
+
         // extracts Reducer interface
         reducerInterface = getReducerInterface(
                 reducerClassElement.getInterfaces(), INTERFACE_REDUCER);
@@ -117,6 +126,7 @@ public class ReducerClass {
                 args.add(param.getSimpleName().toString());
             }
 
+            builder.addModifiers(executableElement.getModifiers());
             builder.addStatement("super($N)", Joiner.on(',').join(args));
             constructors.add(builder.build());
         }
@@ -152,7 +162,13 @@ public class ReducerClass {
         for (ActionSelectorAnnotatedMethod method: methods) {
             builder.add("case $S:\n", method.getAnnotationValue());
             builder.indent();
-            builder.addStatement("return $N(state, ($T)action.getPayload())", method.getMethodName(), method.getParam2().asType());
+
+            if (method.getParam2() == null) {
+                builder.addStatement("return $N(state)", method.getMethodName());
+            } else {
+                builder.addStatement("return $N(state, ($T)action.getPayload())", method.getMethodName(), method.getParam2().asType());
+            }
+
             builder.unindent();
         }
 

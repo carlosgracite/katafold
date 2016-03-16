@@ -22,8 +22,8 @@ public class ActionSelectorTest {
         JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
                 generateImportBoilerplate(),
                 "public abstract class TestReducer implements Reducer<String> {",
-                "  TestReducer(String arg0) {}",
-                "  TestReducer(String arg0, Integer arg1) {}",
+                "  public TestReducer(String arg0) {}",
+                "  public TestReducer(String arg0, Integer arg1) {}",
                 "  @ActionSelector(\"ACTION_TEST\")",
                 "  String testAction(String state, Integer action) {return null;}",
                 "}"));
@@ -36,10 +36,10 @@ public class ActionSelectorTest {
                         "import java.lang.Override;",
                         "import java.lang.String;",
                         "public class KataTestReducer extends TestReducer {",
-                        "  KataTestReducer(String arg0) {",
+                        "  public KataTestReducer(String arg0) {",
                         "    super(arg0);",
                         "  }",
-                        "  KataTestReducer(String arg0, Integer arg1) {",
+                        "  public KataTestReducer(String arg0, Integer arg1) {",
                         "    super(arg0, arg1);",
                         "  }",
                         "  @Override",
@@ -80,10 +80,10 @@ public class ActionSelectorTest {
                 generateImportBoilerplate(),
                 "public abstract class TestReducer implements Reducer<String> {",
                 "  @ActionSelector(\"ACTION_TEST1\")",
-                "  String testActionA(String state, Integer Action) {return null;}",
+                "  String testActionA(String state, Integer action) {return null;}",
                 "",
                 "  @ActionSelector(\"ACTION_TEST2\")",
-                "  String testActionB(String state, String Action) {return null;}",
+                "  String testActionB(String state, String action) {return null;}",
                 "}"));
 
         JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/KataTestReducer",
@@ -94,7 +94,7 @@ public class ActionSelectorTest {
                         "import java.lang.Override;",
                         "import java.lang.String;",
                         "public class KataTestReducer extends TestReducer {",
-                        "  KataTestReducer() {",
+                        "  public KataTestReducer() {",
                         "    super();",
                         "  }",
                         "  @Override",
@@ -104,6 +104,42 @@ public class ActionSelectorTest {
                         "        return testActionA(state, (Integer)action.getPayload());",
                         "      case \"ACTION_TEST2\":",
                         "        return testActionB(state, (String)action.getPayload());",
+                        "    }",
+                        "    return state;",
+                        "  }",
+                        "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new KatafoldProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(expectedSource);
+    }
+
+    @Test
+    public void shouldGenerateNoPayloadAction() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST\")",
+                "  String testAction(String state) {return null;}",
+                "}"));
+
+        JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/KataTestReducer",
+                Joiner.on('\n').join(
+                        "package test;",
+                        "import com.carlosgracite.katafold.Action;",
+                        "import java.lang.Override;",
+                        "import java.lang.String;",
+                        "public class KataTestReducer extends TestReducer {",
+                        "  public KataTestReducer() {",
+                        "    super();",
+                        "  }",
+                        "  @Override",
+                        "  public String reduce(String state, Action action) {",
+                        "    switch (action.getType()) {",
+                        "      case \"ACTION_TEST\":",
+                        "        return testAction(state);",
                         "    }",
                         "    return state;",
                         "  }",
@@ -139,7 +175,7 @@ public class ActionSelectorTest {
                         "import java.lang.Override;",
                         "import java.lang.String;",
                         "public class KataTestReducer1 extends TestReducer1 {",
-                        "  KataTestReducer1() {",
+                        "  public KataTestReducer1() {",
                         "    super();",
                         "  }",
                         "  @Override",
@@ -159,7 +195,7 @@ public class ActionSelectorTest {
                         "import java.lang.Override;",
                         "import java.lang.String;",
                         "public class KataTestReducer2 extends TestReducer2 {",
-                        "  KataTestReducer2() {",
+                        "  public KataTestReducer2() {",
                         "    super();",
                         "  }",
                         "  @Override",
@@ -177,6 +213,22 @@ public class ActionSelectorTest {
                 .compilesWithoutError()
                 .and()
                 .generatesSources(expectedSource1, expectedSource2);
+    }
+
+    @Test
+    public void failIfPrivateConstructor() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  private TestReducer() {}",
+                "  @ActionSelector(\"ACTION_TEST\")",
+                "  String testAction(String state, Integer action) {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new KatafoldProcessor())
+                .failsToCompile()
+                .withErrorContaining("class TestReducer contains methods annotated with @ActionSelector and should not contain private constructors.");
     }
 
     @Test
@@ -270,12 +322,27 @@ public class ActionSelectorTest {
     }
 
     @Test
-    public void failsIfMethodContainsWrongNumberOfParameters() {
+    public void failsIfMethodContainsNoParameter() {
         JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
                 generateImportBoilerplate(),
                 "public abstract class TestReducer implements Reducer<String> {",
                 "  @ActionSelector(\"ACTION_TEST\")",
-                "  String testAction(String state) {return null;}",
+                "  String testAction() {return null;}",
+                "}"));
+
+        Truth.assertAbout(javaSource()).that(source)
+                .processedWith(new KatafoldProcessor())
+                .failsToCompile()
+                .withErrorContaining("wrong number of parameters on method testAction().");
+    }
+
+    @Test
+    public void failsIfMethodContainsMoreThanTwoParameters() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestReducer", Joiner.on('\n').join(
+                generateImportBoilerplate(),
+                "public abstract class TestReducer implements Reducer<String> {",
+                "  @ActionSelector(\"ACTION_TEST\")",
+                "  String testAction(String arg0, String arg1, String arg2) {return null;}",
                 "}"));
 
         Truth.assertAbout(javaSource()).that(source)
