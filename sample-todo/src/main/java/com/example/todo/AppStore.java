@@ -2,17 +2,15 @@ package com.example.todo;
 
 import com.carlosgracite.katafold.Reducer;
 import com.carlosgracite.katafold.Store;
+import com.example.todo.state.AppState;
 import com.example.todo.state.ImmutableAppState;
 import com.example.todo.state.TodoItem;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 
 import java.util.Collections;
 
-public class AppStore extends Store<ImmutableAppState> {
+public class AppStore extends Store<AppState> {
 
-    public AppStore(Reducer<ImmutableAppState> reducer) {
+    public AppStore(Reducer<AppState> reducer) {
         super(reducer);
     }
 
