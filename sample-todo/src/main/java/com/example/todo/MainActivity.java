@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.example.todo.action.TodoActions;
+import com.example.todo.middleware.LoggerMiddleware;
 import com.example.todo.reducer.KataAppReducer;
 import com.example.todo.state.AppState;
 import com.example.todo.state.ImmutableTodoItem;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements AppStore.ChangeLi
         todoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         store = new AppStore(new KataAppReducer());
+        store.applyMidlewares(new LoggerMiddleware(store));
+
         onStateChange(store.createInitialState());
     }
 

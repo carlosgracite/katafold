@@ -3,36 +3,55 @@ package com.carlosgracite.katafold;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Store<State> {
+public abstract class Store<State> implements Dispatcher {
 
     private boolean isDispatching = false;
     private State currentState;
     private Reducer<State> currentReducer;
+    private Dispatcher rootDispatcher;
 
     private List<ChangeListener<State>> changeListeners = new ArrayList<>();
 
     public Store(Reducer<State> reducer) {
         this.currentReducer = reducer;
         this.currentState = createInitialState();
+        rootDispatcher = createRootDispatcher();
     }
 
     public Action dispatch(Action action) {
-        State previousState = currentState;
+        return rootDispatcher.dispatch(action);
+    }
 
-        try {
-            isDispatching = true;
-            currentState = currentReducer.reduce(currentState, action);
-        } finally {
-            isDispatching = false;
+    public void applyMidlewares(Middleware... middlewares) {
+        for (int i = middlewares.length-1; i >= 0; i--) {
+            Middleware middleware = middlewares[i];
+            middleware.setNext(rootDispatcher);
+            rootDispatcher = middleware;
         }
+    }
 
-        if (!currentState.equals(previousState)) {
-            for (ChangeListener<State> changeListener: changeListeners) {
-                changeListener.onStateChange(currentState);
+    protected Dispatcher createRootDispatcher() {
+        return new Dispatcher() {
+            @Override
+            public Action dispatch(Action action) {
+                State previousState = currentState;
+
+                try {
+                    isDispatching = true;
+                    currentState = currentReducer.reduce(currentState, action);
+                } finally {
+                    isDispatching = false;
+                }
+
+                if (!currentState.equals(previousState)) {
+                    for (ChangeListener<State> changeListener: changeListeners) {
+                        changeListener.onStateChange(currentState);
+                    }
+                }
+
+                return action;
             }
-        }
-
-        return action;
+        };
     }
 
     protected abstract State createInitialState();
@@ -56,4 +75,5 @@ public abstract class Store<State> {
     public interface ChangeListener<State> {
         void onStateChange(State currentState);
     }
+
 }

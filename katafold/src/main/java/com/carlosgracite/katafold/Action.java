@@ -19,4 +19,8 @@ public class Action<T> {
         return payload;
     }
 
+    @Override
+    public String toString() {
+        return "Action{type=" + type + ", payload=" + payload + "}";
+    }
 }
