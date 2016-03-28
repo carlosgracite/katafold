@@ -7,8 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.example.todo.action.TodoActions;
-import com.example.todo.middleware.LoggerMiddleware;
-import com.example.todo.reducer.KataAppReducer;
 import com.example.todo.state.AppState;
 import com.example.todo.state.ImmutableTodoItem;
 import com.example.todo.state.TodoItem;
@@ -35,15 +33,12 @@ public class MainActivity extends AppCompatActivity implements AppStore.ChangeLi
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        store = new AppStore(new KataAppReducer());
-        store.applyMidlewares(new LoggerMiddleware(store));
+        store = TodoListApplication.getStore();
 
-        todoAdapter = new TodoAdapter();
+        todoAdapter = new TodoAdapter(store.getState().todoItems());
 
         todoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         todoRecyclerView.setAdapter(todoAdapter);
-
-        onStateChange(store.createInitialState());
     }
 
     @OnClick(R.id.fab)

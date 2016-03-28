@@ -18,8 +18,8 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
     private List<TodoItem> todoItemList;
 
-    public TodoAdapter() {
-        this.todoItemList = new ArrayList<>();
+    public TodoAdapter(List<TodoItem> todoItemList) {
+        this.todoItemList = todoItemList;
     }
 
     @Override
