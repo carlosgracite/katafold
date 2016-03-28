@@ -2,6 +2,7 @@ package com.example.todo.reducer;
 
 import com.carlosgracite.katafold.Reducer;
 import com.carlosgracite.katafold.annotations.ActionSelector;
+import com.example.todo.action.TodoActions;
 import com.example.todo.state.AppState;
 import com.example.todo.state.ImmutableAppState;
 import com.example.todo.state.ImmutableTodoItem;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public abstract class AppReducer implements Reducer<AppState> {
 
-    @ActionSelector("ADD_TODO")
+    @ActionSelector(TodoActions.ADD_TODO)
     protected AppState addTodo(AppState state, TodoItem todoItem) {
         return ImmutableAppState.builder()
                 .from(state)
@@ -22,7 +23,7 @@ public abstract class AppReducer implements Reducer<AppState> {
                 .build();
     }
 
-    @ActionSelector("TOGGLE_TODO")
+    @ActionSelector(TodoActions.TOGGLE_TODO)
     protected AppState toggleTodo(AppState state, final Long id) {
         List<TodoItem> todoItemList = state.todoItems();
 
