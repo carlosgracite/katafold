@@ -20,6 +20,8 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements AppStore.ChangeListener<AppState> {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     @Bind(R.id.list_todo)
     RecyclerView todoRecyclerView;
 
@@ -33,10 +35,13 @@ public class MainActivity extends AppCompatActivity implements AppStore.ChangeLi
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        todoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         store = new AppStore(new KataAppReducer());
         store.applyMidlewares(new LoggerMiddleware(store));
+
+        todoAdapter = new TodoAdapter();
+
+        todoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        todoRecyclerView.setAdapter(todoAdapter);
 
         onStateChange(store.createInitialState());
     }
@@ -65,13 +70,8 @@ public class MainActivity extends AppCompatActivity implements AppStore.ChangeLi
 
     @Override
     public void onStateChange(AppState currentState) {
-        Log.d("LOL", "size: " + store.getState().todoItems());
-        if (todoAdapter == null) {
-            todoAdapter = new TodoAdapter(currentState.todoItems());
-            todoRecyclerView.setAdapter(todoAdapter);
-        } else {
-            todoAdapter.setTodoItemList(currentState.todoItems());
-            todoAdapter.notifyDataSetChanged();
-        }
+        Log.d(TAG, "size: " + store.getState().todoItems());
+        todoAdapter.setTodoItemList(currentState.todoItems());
+        todoAdapter.notifyDataSetChanged();
     }
 }

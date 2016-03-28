@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.todo.state.TodoItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -17,8 +18,8 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
     private List<TodoItem> todoItemList;
 
-    public TodoAdapter(List<TodoItem> todoItemList) {
-        this.todoItemList = todoItemList;
+    public TodoAdapter() {
+        this.todoItemList = new ArrayList<>();
     }
 
     @Override
