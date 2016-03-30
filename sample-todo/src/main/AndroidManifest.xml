@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.TodoEditorActivity" />
+        <activity android:name=".ui.activity.TodoEditorActivity"
+            android:windowSoftInputMode="stateVisible" />
     </application>
 
 </manifest>
