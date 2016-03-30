@@ -31,7 +31,7 @@ public class TodoListActivity extends BaseKataActivity<AppStore, AppState> {
         setContentView(R.layout.activity_todo_list);
         ButterKnife.bind(this);
 
-        todoAdapter = new TodoAdapter(getState().todoItems());
+        todoAdapter = new TodoAdapter(getStore(), getState().todoItems());
 
         todoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         todoRecyclerView.setAdapter(todoAdapter);
