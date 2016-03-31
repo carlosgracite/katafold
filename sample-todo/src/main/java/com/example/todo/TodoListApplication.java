@@ -3,6 +3,7 @@ package com.example.todo;
 import android.app.Application;
 
 import com.example.todo.middleware.LoggerMiddleware;
+import com.example.todo.middleware.ThunkMiddleware;
 import com.example.todo.reducer.KataAppReducer;
 
 public class TodoListApplication extends Application {
@@ -17,7 +18,9 @@ public class TodoListApplication extends Application {
 
     private void setupStore() {
         store = new AppStore(new KataAppReducer());
-        store.applyMidlewares(new LoggerMiddleware(store));
+        store.applyMidlewares(
+                new LoggerMiddleware(store),
+                new ThunkMiddleware<>(store));
         store.createInitialState();
     }
 
