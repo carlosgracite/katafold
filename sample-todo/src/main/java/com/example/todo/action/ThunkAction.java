@@ -3,9 +3,9 @@ package com.example.todo.action;
 import com.carlosgracite.katafold.Action;
 import com.carlosgracite.katafold.Store;
 
-public class AsyncAction<S extends Store> extends Action<AsyncAction.Function<S>> {
+public class ThunkAction<S extends Store> extends Action<ThunkAction.Function<S>> {
 
-    public AsyncAction(String type, Function<S> payload) {
+    public ThunkAction(String type, Function<S> payload) {
         super(type, payload);
     }
 

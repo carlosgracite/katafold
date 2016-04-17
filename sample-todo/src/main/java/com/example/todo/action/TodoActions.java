@@ -19,8 +19,8 @@ public class TodoActions {
             return new Action<>(TOGGLE_TODO, id);
         }
 
-        public static AsyncAction<AppStore> thunkTest() {
-            return new AsyncAction<>("THUNK_TEST", new AsyncAction.Function<AppStore>() {
+        public static ThunkAction<AppStore> thunkTest() {
+            return new ThunkAction<>("THUNK_TEST", new ThunkAction.Function<AppStore>() {
                 @Override
                 public void call(AppStore store) {
                     // do stuff here
