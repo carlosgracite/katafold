@@ -79,6 +79,6 @@ public class TodoEditorActivity extends BaseKataActivity<AppStore, AppState> {
                 .text(todoEditText.getText().toString())
                 .build();
 
-        getStore().dispatch(TodoActions.CREATOR.addTodo(todoItem));
+        getStore().dispatch(TodoActions.CREATOR.addTodoAsync(todoItem));
     }
 }
